@@ -10,9 +10,6 @@ interface GameProps {
 const Game = ({ username, roomId }: GameProps) => {
   const { gameState, dispatch } = useGameRoom(username, roomId);
 
-  // Local state to use for the UI
-  const [guess, setGuess] = useState<number>(0);
-
   // Indicated that the game is loading
   if (gameState === null) {
     return (
@@ -25,39 +22,27 @@ const Game = ({ username, roomId }: GameProps) => {
     );
   }
 
-  const handleGuess = (event: React.SyntheticEvent) => {
+  const handleRoll = (event: React.SyntheticEvent) => {
     event.preventDefault();
-    // Dispatch allows you to send an action!
-    // Modify /game/logic.ts to change what actions you can send
-    dispatch({ type: "guess", guess: guess });
+    const roll = Math.floor(Math.random() * 6) + 1;
+    dispatch({ type: "roll", roll: roll });
   };
 
   return (
     <>
       <h1 className="text-2xl border-b border-yellow-400 text-center relative">
-        🎲 Guess the number!
+        🎲 Roll the dice!
       </h1>
       <section>
         <form
           className="flex flex-col gap-4 py-6 items-center"
-          onSubmit={handleGuess}
+          onSubmit={handleRoll}
         >
-          <label
-            htmlFor="guess"
-            className="text-7xl font-bold text-stone-50 bg-black rounded p-2 text-"
-          >
-            {guess}
-          </label>
-          <input
-            type="range"
-            name="guess"
-            id="guess"
-            className="opacity-70 hover:opacity-100 accent-yellow-400"
-            onChange={(e) => setGuess(Number(e.currentTarget.value))}
-            value={guess}
-          />
+          <div className="text-7xl font-bold text-stone-50 bg-black rounded p-2">
+            {gameState.rolledNumber || "?"}
+          </div>
           <button className="rounded border p-5 bg-yellow-400 group text-black shadow hover:animate-wiggle">
-            Guess!
+            Roll!
           </button>
         </form>
 
@@ -69,6 +54,19 @@ const Game = ({ username, roomId }: GameProps) => {
               {logEntry.message}
             </p>
           ))}
+        </div>
+
+        <h2>Player Coins</h2>
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(gameState.userInventories).map(([userId, inventory]) => {
+            return (
+              <div key={userId}>
+                <p>USER: {userId}</p>
+                <p>INCOME: {inventory.income}</p>
+                {/* <p>CARDS: {inventory.landmarkCards}</p> */}
+              </div>
+            )
+          })}
         </div>
 
         <h2 className="text-lg">

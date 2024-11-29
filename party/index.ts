@@ -13,7 +13,7 @@ export default class Server implements Party.Server {
   constructor(readonly party: Party.Party) {
     this.gameState = initialGame();
     console.log("Room created:", party.id);
-    console.log("Room target", this.gameState.target);
+    console.log("Current # of Players: ", this.gameState.users.length)
     // party.storage.put;
   }
   onConnect(connection: Party.Connection, ctx: Party.ConnectionContext) {
